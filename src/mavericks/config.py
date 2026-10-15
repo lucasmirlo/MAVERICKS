@@ -26,6 +26,8 @@ EMBED_MODEL = os.getenv("MAVERICKS_EMBED", "nomic-embed-text")
 # --- Rutas ------------------------------------------------------------------
 DATA_DIR = ROOT / "data"          # los documentos del reto
 INDEX_DIR = ROOT / "index"        # el índice; se regenera con `python -m mavericks.ingest`
+# Índice vectorial: "chroma" o "numpy". NumPy es el plan B si Chroma se cae.
+VECTOR_STORE = os.getenv("MAVERICKS_STORE", "chroma").lower()
 EVAL_CSV = ROOT / "eval" / "eval.csv"
 
 # --- Troceado -----------------------------------------------------------------

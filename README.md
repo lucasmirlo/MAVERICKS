@@ -1,6 +1,6 @@
 # Mavericks
 
-RAG con citas sobre modelos locales: Ollama + NumPy + PydanticAI + Streamlit.
+RAG con citas sobre modelos locales: Ollama + Chroma + PydanticAI + Streamlit.
 Ningún dato sale de la máquina.
 
 ## Arrancar (en este orden)
@@ -32,7 +32,7 @@ export MAVERICKS_LLM=mistral-small3.2:24b     # Mac / Linux
 | `src/mavericks/schemas.py` | El contrato: qué devuelve el sistema (Pydantic) |
 | `src/mavericks/embeddings.py` | La ÚNICA función texto → vector |
 | `src/mavericks/ingest.py` | documentos → trozos → embeddings → índice |
-| `src/mavericks/store.py` | El índice vectorial: NumPy puro, guardado en `index/` |
+| `src/mavericks/store.py` | El índice vectorial: Chroma, o NumPy como plan B (`MAVERICKS_STORE`) |
 | `src/mavericks/retrieve.py` | pregunta → los k trozos más cercanos |
 | `src/mavericks/agent.py` | pregunta + trozos → respuesta validada (PydanticAI) |
 | `src/mavericks/tools.py` | Cálculos deterministas que el agente puede llamar |

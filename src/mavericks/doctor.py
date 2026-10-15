@@ -7,6 +7,7 @@ símbolos como ✔ y el script se rompería justo cuando lo necesitas.
 """
 
 import importlib
+import subprocess
 import sys
 import time
 
@@ -29,7 +30,7 @@ def check(nombre: str, bien: bool, arreglo: str = "") -> None:
 def main() -> None:
     check(f"Python {sys.version.split()[0]}", sys.version_info >= (3, 12), "Necesitas Python 3.12 o superior")
 
-    for mod in ("pydantic", "pydantic_ai", "numpy", "streamlit", "pypdf", "openai"):
+    for mod in ("pydantic", "pydantic_ai", "numpy", "chromadb", "streamlit", "pypdf", "openai"):
         try:
             m = importlib.import_module(mod)
             check(f"{mod} {getattr(m, '__version__', '')}".strip(), True)
@@ -65,10 +66,21 @@ def main() -> None:
     )
     check(f"LLM responde en {time.time() - t:.1f}s (la 1ª vez incluye cargarlo)", r.status_code == 200)
 
-    from mavericks import store
-
-    n = store.contar()
-    check(f"Índice con {n} trozos", n > 0, "Ejecuta: uv run python -m mavericks.ingest")
+    # El índice se prueba en un proceso aparte: si Chroma se cae con un fallo
+    # nativo, se llevaría por delante al doctor sin dejar ningún mensaje.
+    prueba = subprocess.run(
+        [sys.executable, "-c", "from mavericks import store; print(store.contar())"],
+        capture_output=True, text=True, timeout=120,
+    )
+    if prueba.returncode != 0:
+        check(
+            f"Índice ({config.VECTOR_STORE}) se cae al abrirlo, código {prueba.returncode}",
+            False,
+            'Pasa al plan B: $env:MAVERICKS_STORE = "numpy" y reindexa',
+        )
+        return
+    n = int(prueba.stdout.strip().splitlines()[-1])
+    check(f"Índice {config.VECTOR_STORE} con {n} trozos", n > 0, "Ejecuta: uv run python -m mavericks.ingest")
 
 
 if __name__ == "__main__":
