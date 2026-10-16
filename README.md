@@ -45,7 +45,7 @@ usa `python -m ...` donde abajo pone `uv run python -m ...`.
 
 ```bash
 uv sync                                   # instala dependencias
-ollama pull llama3.1:8b                   # el modelo que genera (5 GB, cabe en 8 GB de VRAM)
+ollama pull qwen3.5:9b                    # el modelo que genera (6 GB, cabe en 8 GB de VRAM)
 ollama pull nomic-embed-text              # el de embeddings (274 MB)
 uv run python -m mavericks.doctor         # comprueba que todo está listo
 uv run python -m mavericks.ingest         # indexa data/

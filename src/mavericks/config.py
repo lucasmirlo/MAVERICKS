@@ -18,9 +18,10 @@ ROOT = Path(__file__).resolve().parents[2]
 
 # --- Ollama ---------------------------------------------------------------
 OLLAMA_URL = os.getenv("MAVERICKS_OLLAMA_URL", "http://localhost:11434")
-# llama3.1:8b (5 GB) cabe entero en una GPU de 8 GB. mistral-small3.2:24b (15 GB)
+# qwen3.5:9b (6 GB) cabe entero en una GPU de 8 GB y razona mucho mejor que
+# llama3.1:8b en preguntas de contar o aplicar condiciones. mistral-small3.2:24b (15 GB)
 # es mejor, pero sin 16 GB de VRAM se reparte con la CPU y tarda minutos por respuesta.
-LLM_MODEL = os.getenv("MAVERICKS_LLM", "llama3.1:8b")
+LLM_MODEL = os.getenv("MAVERICKS_LLM", "qwen3.5:9b")
 EMBED_MODEL = os.getenv("MAVERICKS_EMBED", "nomic-embed-text")
 
 # --- Rutas ------------------------------------------------------------------
