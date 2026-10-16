@@ -26,9 +26,15 @@ class Cita(BaseModel):
 
 
 class Respuesta(BaseModel):
+    # Va PRIMERO a propósito: el modelo escribe los campos en orden, así que
+    # razona antes de comprometerse con una respuesta.
+    razonamiento: str = Field(
+        description="En 2 a 4 frases cortas, antes de responder: qué fragmentos sirven y, "
+        "si hay que contar o aplicar condiciones, la cuenta. Sin divagar"
+    )
     respuesta: str = Field(description="Respuesta a la pregunta, apoyada solo en el contexto proporcionado")
     citas: list[Cita] = Field(description="Fragmentos del contexto en los que se apoya la respuesta")
-    suficiente: bool = Field(description="False si el contexto no contiene información para responder")
+    suficiente: bool = Field(description="False solo si el contexto no tiene nada que ver con la pregunta")
 
 
 # --- Ejemplo para un reto de ranking (p. ej. CVs contra ofertas) ---------------

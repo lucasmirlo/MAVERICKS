@@ -10,7 +10,7 @@ trozos duplicados.
 
 from pathlib import Path
 
-from pypdf import PdfReader
+import pymupdf4llm
 
 from mavericks import config, store
 from mavericks.embeddings import embed
@@ -21,8 +21,10 @@ BATCH = 32  # trozos por llamada de embeddings
 def leer_paginas(path: Path) -> list[tuple[int, str]]:
     """[(número de página, texto), ...]. Un TXT o MD cuenta como página 1."""
     if path.suffix.lower() == ".pdf":
-        reader = PdfReader(path)
-        return [(i + 1, p.extract_text() or "") for i, p in enumerate(reader.pages)]
+        # pymupdf4llm saca las tablas como tablas markdown. Con pypdf las
+        # columnas salían pegadas y el modelo no sabía contar filas.
+        paginas = pymupdf4llm.to_markdown(str(path), page_chunks=True)
+        return [(i + 1, p["text"]) for i, p in enumerate(paginas)]
     return [(1, path.read_text(encoding="utf-8"))]
 
 
@@ -50,7 +52,10 @@ def main() -> None:
     trozos: list[dict] = []
     for path in archivos:
         n_antes = len(trozos)
+        vacias = []
         for pagina, texto in leer_paginas(path):
+            if len(texto.split()) < 20:
+                vacias.append(pagina)
             for j, t in enumerate(trocear(texto)):
                 trozos.append(
                     {"id": f"{path.name}-p{pagina}-c{j}", "texto": t, "fuente": path.name, "pagina": pagina}
@@ -58,6 +63,8 @@ def main() -> None:
         n = len(trozos) - n_antes
         aviso = "   <- 0 trozos: ¿PDF escaneado? Necesita OCR" if n == 0 else ""
         print(f"  {path.name}: {n} trozos{aviso}")
+        if vacias and n:
+            print(f"     [AVISO] páginas casi sin texto (¿escaneadas?): {vacias}")
 
     vectores: list[list[float]] = []
     for i in range(0, len(trozos), BATCH):

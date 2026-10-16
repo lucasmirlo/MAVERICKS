@@ -19,7 +19,7 @@ def buscar(pregunta: str, k: int = config.TOP_K) -> list[Fragmento]:
         raise RuntimeError("El índice está vacío. Ejecuta: uv run python -m mavericks.ingest")
     return [
         Fragmento(texto=t["texto"], fuente=t["fuente"], pagina=t["pagina"], distancia=d)
-        for t, d in store.buscar(embed([pregunta])[0], k)
+        for t, d in store.buscar(embed([pregunta], consulta=True)[0], k)
     ]
 
 

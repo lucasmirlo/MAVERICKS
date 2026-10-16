@@ -30,7 +30,7 @@ def check(nombre: str, bien: bool, arreglo: str = "") -> None:
 def main() -> None:
     check(f"Python {sys.version.split()[0]}", sys.version_info >= (3, 12), "Necesitas Python 3.12 o superior")
 
-    for mod in ("pydantic", "pydantic_ai", "numpy", "chromadb", "streamlit", "pypdf", "openai"):
+    for mod in ("pydantic", "pydantic_ai", "numpy", "chromadb", "streamlit", "pymupdf4llm", "openai"):
         try:
             m = importlib.import_module(mod)
             check(f"{mod} {getattr(m, '__version__', '')}".strip(), True)

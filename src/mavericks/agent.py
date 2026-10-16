@@ -18,7 +18,10 @@ from mavericks.schemas import Fragmento, Respuesta
 INSTRUCCIONES = """\
 Eres un asistente que responde en español usando SOLO el contexto que se te da.
 Cada fragmento del contexto empieza con [fuente, página].
-Si el contexto no basta para responder, pon suficiente=false y dilo en la respuesta.
+Primero razona en `razonamiento`: qué fragmentos sirven y, si la respuesta exige
+contar, sumar o aplicar condiciones, hazlo paso a paso.
+Si el contexto responde aunque sea en parte, responde con lo que hay y di qué falta.
+Pon suficiente=false solo si el contexto no tiene nada que ver con la pregunta.
 No inventes datos. Cita las fuentes de las que sale cada afirmación.
 """
 
@@ -34,6 +37,9 @@ def get_agent() -> Agent:
         output_type=NativeOutput(Respuesta),  # Ollama >= 0.5 respeta el esquema al generar
         instructions=INSTRUCCIONES,
         retries=2,
+        # Tope de longitud: si el modelo entra en bucle, se corta aquí en vez de
+        # llenar el contexto y empezar a decir sinsentidos
+        model_settings={"max_tokens": 800},
         # tools=[cuota_mensual],  # Mind + Tools: ver tools.py
     )
 
@@ -50,6 +56,7 @@ def responder(pregunta: str) -> tuple[Respuesta, list[Fragmento]]:
     if not contexto:
         # Ningún trozo pasa el umbral: decimos que no sabemos sin llamar al modelo
         sin_info = Respuesta(
+            razonamiento="Ningún fragmento supera el umbral de distancia; no se ha llamado al modelo.",
             respuesta="No tengo información suficiente en los documentos para responder a eso.",
             citas=[],
             suficiente=False,

@@ -41,6 +41,9 @@ if pregunta:
     else:
         st.warning(respuesta.respuesta)
 
+    with st.expander("Cómo ha llegado a la respuesta"):
+        st.write(respuesta.razonamiento)
+
     if respuesta.citas:
         st.caption("Fuentes: " + " · ".join(f"{c.fuente} p. {c.pagina}" for c in respuesta.citas))
 

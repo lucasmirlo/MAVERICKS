@@ -3,6 +3,44 @@
 RAG con citas sobre modelos locales: Ollama + Chroma + PydanticAI + Streamlit.
 Ningún dato sale de la máquina.
 
+## Instalar (una vez por ordenador)
+
+**1. uv.** Gestiona Python y las dependencias. Si no tienes Python 3.12, lo descarga solo.
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"   # Windows
+```
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh                                      # Mac / Linux
+```
+
+Cierra y vuelve a abrir la terminal para que reconozca `uv`. Si usas Anaconda, haz antes `conda deactivate`.
+
+**2. Ollama.** Descárgalo de [ollama.com](https://ollama.com/download) y ábrelo.
+
+**3. El repo.**
+
+```bash
+git clone https://github.com/lucasmirlo/mavericks.git
+cd mavericks
+uv sync --python-preference only-managed   # usa el Python de uv, no el de conda
+```
+
+<details>
+<summary>Plan B: no puedo instalar uv</summary>
+
+Con Python 3.12 o superior ya instalado:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate          # Mac / Linux: source .venv/bin/activate
+pip install -e .
+```
+
+pip no lee `uv.lock`, así que las versiones pueden variar algo. A partir de aquí,
+usa `python -m ...` donde abajo pone `uv run python -m ...`.
+</details>
+
 ## Arrancar (en este orden)
 
 ```bash

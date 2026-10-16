@@ -21,9 +21,23 @@ def _client() -> OpenAI:
     return OpenAI(base_url=f"{config.OLLAMA_URL}/v1", api_key="ollama")
 
 
-def embed(textos: list[str]) -> list[list[float]]:
-    """Devuelve un vector por cada texto, en el mismo orden."""
+# Algunos modelos de embeddings se entrenaron con un prefijo que dice si el
+# texto es un documento o una pregunta. Sin él, todas las distancias se
+# parecen y la búsqueda apenas distingue un trozo de otro.
+PREFIJOS = {
+    "nomic-embed-text": ("search_document: ", "search_query: "),
+}
+
+
+def embed(textos: list[str], consulta: bool = False) -> list[list[float]]:
+    """Devuelve un vector por cada texto, en el mismo orden.
+
+    consulta=True para la pregunta del usuario; False (por defecto) para los
+    trozos de los documentos. Cambiar esto obliga a reindexar.
+    """
     if not textos:
         return []
-    r = _client().embeddings.create(model=config.EMBED_MODEL, input=textos)
+    doc, query = PREFIJOS.get(config.EMBED_MODEL.split(":")[0], ("", ""))
+    prefijo = query if consulta else doc
+    r = _client().embeddings.create(model=config.EMBED_MODEL, input=[prefijo + t for t in textos])
     return [d.embedding for d in r.data]
